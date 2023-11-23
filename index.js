@@ -3,6 +3,8 @@ const errorDiv = document.getElementById("error");
 const directoryPicker = document.getElementById("directory_picker");
 const audioGrid = document.getElementById("audio_grid");
 
+const defaultBackColor = "darkolivegreen"
+
 let audioCtx = null;
 
 directoryPicker.onchange = (e) => {
@@ -30,16 +32,17 @@ function updateDisplay() {
 
     let gridItem = document.createElement("div");
     let title = createItemTitle(file);
+
 	
-	let filenameNoExt = file.name.slice(0,-4);
-	let backColor = filenameNoExt.split("_").pop();
-	if (backColor == null || backColor == "") {
-		backColor = "darkolivegreen";
-	}
+
     gridItem.append(title);
     gridItem.playing = false;
-	gridItem.style.backgroundColor = backColor;
-	gridItem.style.color = getContrastColor(colorNameToHex(backColor));
+
+	let { color, backgroundColor} = getColors(file.name)
+	gridItem.style.backgroundColor = backgroundColor;
+	gridItem.normalBackColor = backgroundColor;
+	gridItem.style.color = color;
+	
 
     gridItem.onclick = (e) => {
       e.preventDefault();
@@ -70,7 +73,7 @@ async function playAudio(file, div) {
   div.playing = true;
   div.style.borderColor = "red";
   source.onended = () => {
-    div.style.borderColor = "darkolivegreen";
+    div.style.borderColor = div.normalBackColor;
     div.playing = false;
   };
 
@@ -101,6 +104,17 @@ function clearError() {
 function reportError(error) {
   errorDiv.innerHTML = `<span style="padding-left: 10px">${error}</span>`;
   errorDiv.style.display = "block";
+}
+
+function getColors(filename) {
+	let filenameNoExt = filename.slice(0,-4);
+	let backColor = filenameNoExt.split("_").pop();
+	if (backColor == null || !CSS.supports("color", backColor)) {
+		backColor = defaultBackColor;
+	}
+	let textColor = getContrastColor(colorNameToHex(backColor));
+	return {color: textColor, backgroundColor: backColor};
+
 }
 
 function getContrastColor(hexColor) {
