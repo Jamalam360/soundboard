@@ -30,6 +30,7 @@ function updateDisplay() {
     let gridItem = document.createElement("div");
 		let title = createItemTitle(file);
     gridItem.append(title);
+	gridItem.playing = false;
     gridItem.onclick = (e) => {
       e.preventDefault();
       playAudio(file, gridItem);
@@ -45,7 +46,10 @@ async function playAudio(file, div) {
 		reportError("Audio context is not initialized");
 		return;
   }
-
+  if (div.playing) {
+	return;
+  }
+  div.playing = true;
   let buffer = await file.arrayBuffer();
   let audioBuffer = await audioCtx.decodeAudioData(buffer);
   let source = audioCtx.createBufferSource();
@@ -55,6 +59,7 @@ async function playAudio(file, div) {
 	div.style.borderColor = "red";
 	source.onended = () => {
 		div.style.borderColor = "darkolivegreen";
+		div.playing = false;
 	};
 
 	source.start();
