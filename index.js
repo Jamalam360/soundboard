@@ -1,3 +1,4 @@
+const debugEnabled = true;
 const errorDiv = document.getElementById("error");
 const directoryPicker = document.getElementById("directory_picker");
 const audioGrid = document.getElementById("audio_grid");
@@ -46,16 +47,18 @@ async function playAudio(file, div) {
 		reportError("Audio context is not initialized");
 		return;
   }
-  if (div.playing) {
-	return;
-  }
-  div.playing = true;
+  
+	if (div.playing) {
+		return;
+	}
+
   let buffer = await file.arrayBuffer();
   let audioBuffer = await audioCtx.decodeAudioData(buffer);
   let source = audioCtx.createBufferSource();
   source.buffer = audioBuffer;
 	source.connect(audioCtx.destination);
-
+	
+  div.playing = true;
 	div.style.borderColor = "red";
 	source.onended = () => {
 		div.style.borderColor = "darkolivegreen";
@@ -83,4 +86,14 @@ function clearError() {
 function reportError(error) {
 	errorDiv.innerHTML = `<span style="padding-left: 10px">${error}</span>`;
 	errorDiv.style.display = "block";
+}
+
+// If debug is enabled, intercepts console.log and prints to the page
+if (debugEnabled) {
+	const log = console.log;
+	console.log = function() {
+		log.apply(console, arguments);
+		let msg = Array.from(arguments).join(" ");
+		errorDiv.innerHTML += `<span style="padding-left: 10px">${msg}</span><br>`;
+	}
 }
