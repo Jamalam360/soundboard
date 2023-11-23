@@ -1,12 +1,10 @@
 const errorDiv = document.getElementById("error");
 const directoryPicker = document.getElementById("directory_picker");
-const submitButton = document.getElementById("submit_button");
 const audioGrid = document.getElementById("audio_grid");
 
 let audioCtx = null;
 
-// Setup button click callback
-submitButton.onclick = (e) => {
+directoryPicker.onchange = (e) => {
   e.preventDefault();
 	audioCtx = new AudioContext();
 	clearError();
@@ -54,9 +52,9 @@ async function playAudio(file, div) {
   source.buffer = audioBuffer;
 	source.connect(audioCtx.destination);
 
-	div.style.backgroundColor = "red";
+	div.style.borderColor = "red";
 	source.onended = () => {
-		div.style.backgroundColor = "white";
+		div.style.borderColor = "darkolivegreen";
 	};
 
 	source.start();
