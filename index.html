@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Soundboard</title>
+</head>
+
+<body>
+	<script src="./index.js" defer="true"></script>
+
+	<style>
+		#error {
+			display: none;
+			width: 60%;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 10px;
+			border: 1px solid;
+			border-color: red;
+			color: red;
+		}
+
+		#input {
+			width: 60%;
+			display: flex;
+			margin-left: auto;
+			margin-right: auto;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		#directory_picker,
+		#submit_button {
+			margin-bottom: 10px;
+		}
+
+		#audio_grid {
+			display: grid;
+			width: 100%;
+			min-height: 5px;
+			border-top: 1px solid;
+			border-color: black;
+			grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+			gap: 0.2rem;
+		}
+
+		.audio_file {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			border: 1px solid;
+			border-color: black;
+			padding: 10px;
+			margin: 10px;
+			cursor: pointer;
+		}
+	</style>
+
+	<main>
+		<div id="error">
+		</div>
+
+		<div id="input">
+			<input id="directory_picker" type="file" accept=".." webkitdirectory="" />
+			<button id="submit_button" type="submit">Submit</button>
+		</div>
+
+		<div id="audio_grid">
+		</div>
+	</main>
+</body>
+
+</html>
