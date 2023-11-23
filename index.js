@@ -1,4 +1,4 @@
-const debugEnabled = true;
+const debugEnabled = false;
 const errorDiv = document.getElementById("error");
 const directoryPicker = document.getElementById("directory_picker");
 const audioGrid = document.getElementById("audio_grid");
@@ -61,24 +61,15 @@ async function playAudio(file, div) {
   }
 
   if (div.playing) {
+    if (div.audio !== null) {
+      div.audio.pause();
+      div.audio.currentTime = 0;
+      div.style.borderColor = div.normalBackColor;
+      div.playing = false;
+    }
+
     return;
   }
-
-  // let buffer = await file.arrayBuffer();
-  // let audioBuffer = await audioCtx.decodeAudioData(buffer);
-  // let source = audioCtx.createBufferSource();
-  // source.buffer = audioBuffer;
-  // source.connect(audioCtx.destination);
-
-  // div.playing = true;
-  // div.style.borderColor = "red";
-  // source.onended = () => {
-  //   div.style.borderColor = div.normalBackColor;
-  //   div.playing = false;
-  // };
-
-  // source.start();
-
 
   const reader = new FileReader();
   reader.onload = function(event) {
@@ -87,7 +78,9 @@ async function playAudio(file, div) {
     audio.onended = () => {
       div.style.borderColor = div.normalBackColor;
       div.playing = false;
-    }
+    };
+
+    div.audio = audio;
   };
   
   div.playing = true;
