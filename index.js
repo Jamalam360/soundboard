@@ -30,8 +30,17 @@ function updateDisplay() {
 
     let gridItem = document.createElement("div");
     let title = createItemTitle(file);
+	
+	let filenameNoExt = file.name.slice(0,-4);
+	let backColor = filenameNoExt.split("_").pop();
+	if (backColor == null || backColor == "") {
+		backColor = "darkolivegreen";
+	}
     gridItem.append(title);
     gridItem.playing = false;
+	gridItem.style.backgroundColor = backColor;
+	gridItem.style.color = getContrastColor(colorNameToHex(backColor));
+
     gridItem.onclick = (e) => {
       e.preventDefault();
       playAudio(file, gridItem);
@@ -70,7 +79,14 @@ async function playAudio(file, div) {
 
 function createItemTitle(file) {
   let title = document.createElement("span");
-  title.innerText = file.name;
+  let last_index = file.name.lastIndexOf("_");
+
+  if (last_index > -1) {
+	title.innerText = file.name.substring(0, last_index);
+  } else {
+	title.innerText = file.name.slice(0, -4);
+  }
+
   title.style.textOverflow = "ellipsis";
   title.style.overflow = "hidden";
   title.style.width = "100%";
@@ -85,6 +101,41 @@ function clearError() {
 function reportError(error) {
   errorDiv.innerHTML = `<span style="padding-left: 10px">${error}</span>`;
   errorDiv.style.display = "block";
+}
+
+function getContrastColor(hexColor) {
+    // Convert hex color to RGB
+    let r = parseInt(hexColor.substr(1, 2), 16);
+    let g = parseInt(hexColor.substr(3, 2), 16);
+    let b = parseInt(hexColor.substr(5, 2), 16);
+
+    // Calculate the relative luminance (per ITU-R BT.709)
+    let luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+
+    // Determine the suitable text color based on luminance
+    return luminance > 0.5 ? '#000000' : '#FFFFFF'; // Return black for light backgrounds, white for dark backgrounds
+}
+
+function colorNameToHex(colorName) {
+    // Create an HTML element (an invisible div)
+    let elem = document.createElement('div');
+    elem.style.color = colorName;
+
+    // Append the element to the document (not necessary for the conversion)
+    document.body.appendChild(elem);
+
+    // Get the computed color style in hexadecimal format
+    let computedColor = window.getComputedStyle(elem).color;
+
+    // Remove the element (cleaning up)
+    document.body.removeChild(elem);
+
+    // Convert the computed color to hex format
+    let hexColor = computedColor.replace(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d(?:\.\d+)?))?\)/, function(_, r, g, b) {
+        return '#' + ((1 << 24) + (Number(r) << 16) + (Number(g) << 8) + Number(b)).toString(16).slice(1);
+    });
+
+    return hexColor;
 }
 
 // If debug is enabled, intercepts console.logs and errors, and prints them to the page
