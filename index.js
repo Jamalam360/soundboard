@@ -72,7 +72,6 @@ function createItemTitle(file) {
   let title = document.createElement("span");
   title.innerText = file.name;
   title.style.textOverflow = "ellipsis";
-  title.style.whiteSpace = "nowrap";
   title.style.overflow = "hidden";
   title.style.width = "100%";
   return title;
