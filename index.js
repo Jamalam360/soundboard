@@ -64,20 +64,35 @@ async function playAudio(file, div) {
     return;
   }
 
-  let buffer = await file.arrayBuffer();
-  let audioBuffer = await audioCtx.decodeAudioData(buffer);
-  let source = audioCtx.createBufferSource();
-  source.buffer = audioBuffer;
-  source.connect(audioCtx.destination);
+  // let buffer = await file.arrayBuffer();
+  // let audioBuffer = await audioCtx.decodeAudioData(buffer);
+  // let source = audioCtx.createBufferSource();
+  // source.buffer = audioBuffer;
+  // source.connect(audioCtx.destination);
 
+  // div.playing = true;
+  // div.style.borderColor = "red";
+  // source.onended = () => {
+  //   div.style.borderColor = div.normalBackColor;
+  //   div.playing = false;
+  // };
+
+  // source.start();
+
+
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const audio = new Audio(event.target.result);
+    audio.play();
+    audio.onended = () => {
+      div.style.borderColor = div.normalBackColor;
+      div.playing = false;
+    }
+  };
+  
   div.playing = true;
   div.style.borderColor = "red";
-  source.onended = () => {
-    div.style.borderColor = div.normalBackColor;
-    div.playing = false;
-  };
-
-  source.start();
+  reader.readAsDataURL(file);
 }
 
 function createItemTitle(file) {
