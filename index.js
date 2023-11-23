@@ -22,7 +22,6 @@ function updateDisplay() {
   }
 
   audioGrid.innerHTML = "";
-  throw new Error("test");
 
   for (const file of files) {
     if (!file.name.endsWith("mp3") && !file.name.endsWith("wav")) {
