@@ -7,6 +7,6 @@
 }
 
 .audio_file {
-	@apply aspect-[4/3] flex items-center justify-center border-4 border-red-800 rounded-lg overflow-hidden text-ellipsis text-center;
+	@apply aspect-[4/3] flex items-center justify-center border-4 rounded-lg overflow-hidden text-ellipsis text-center;
 }
 

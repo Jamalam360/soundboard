@@ -43,6 +43,7 @@ function updateDisplay() {
     gridItem.style.backgroundColor = backgroundColor;
     gridItem.normalBackColor = backgroundColor;
     gridItem.style.color = color;
+    gridItem.style.borderColor = backgroundColor;
 
     gridItem.onclick = (e) => {
       e.preventDefault();
