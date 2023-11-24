@@ -1,11 +1,14 @@
 const debugEnabled = false;
-const errorDiv = document.getElementById("error");
+const error = document.getElementById("error_text");
+const errorDiv = document.getElementById("error_container");
 const directoryPicker = document.getElementById("directory_picker");
 const audioGrid = document.getElementById("audio_grid");
 
-const defaultBackColor = "darkolivegreen";
+const defaultBackColor = "rgb(153 27 27)";
 
 let audioCtx = null;
+
+reportError("Test error here");
 
 directoryPicker.onchange = (e) => {
   e.preventDefault();
@@ -81,7 +84,7 @@ async function playAudio(file, div) {
   };
 
   div.playing = true;
-  div.style.borderColor = "red";
+  div.style.borderColor = "rgb(229 231 235)";
   reader.readAsDataURL(file);
 }
 
@@ -101,14 +104,14 @@ function createItemTitle(file) {
   return title;
 }
 
-function clearError() {
-  errorDiv.style.display = "none";
-  errorDiv.innerHTML = "";
+function reportError(errorMessage) {
+  error.innerHTML = errorMessage;
+  errorDiv.style.display = "flex";
 }
 
-function reportError(error) {
-  errorDiv.innerHTML = `<span style="padding-left: 10px">${error}</span>`;
-  errorDiv.style.display = "block";
+function clearError() {
+  error.innerHTML = "";
+  errorDiv.style.display = "none";
 }
 
 function getColors(filename) {

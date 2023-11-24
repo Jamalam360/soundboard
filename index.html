@@ -4,71 +4,33 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="apple-mobile-web-app-capable" content="yes">
 	<title>Soundboard</title>
 </head>
 
 <body style="background-color: black; color: antiquewhite">
-	<script src="./index.js" defer="true"></script>
+	<script src="./index.js" defer></script>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="stylesheet" href="build/output.css">
 
-	<style>
-		#error {
-			display: none;
-			width: 60%;
-			margin-left: auto;
-			margin-right: auto;
-			margin-bottom: 10px;
-			border: 1px solid;
-			border-color: red;
-			color: red;
-		}
-
-		#input {
-			width: 60%;
-			display: flex;
-			margin-left: auto;
-			margin-right: auto;
-			flex-direction: column;
-			justify-content: center;
-		}
-
-		#directory_picker {
-			margin-bottom: 10px;
-		}
-
-		#audio_grid {
-			display: grid;
-			width: 100%;
-			min-height: 5px;
-			border-top: 1px solid;
-			border-color: red;
-			grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
-			gap: 0.2rem;
-		}
-
-		.audio_file {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
-			border: 3px solid;
-			border-color: black;
-			background-color: darkolivegreen;
-			padding: 20px;
-			margin: 20px;
-			min-height: 250px;
-			cursor: pointer;
-		}
-	</style>
-
-	<main>
-		<div id="error">
+	<main class="text-xl m-4 text-gray-200 font-semibold">
+		<div id="error_container" class="w-3/5 h-12 mx-auto mb-3 p-2 bg-red-600 rounded-lg flex-row space-x-2 items-center"
+			style="display: none;">
+			<img
+				src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNlNWU3ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hbGVydC10cmlhbmdsZSI+PHBhdGggZD0ibTIxLjczIDE4LTgtMTRhMiAyIDAgMCAwLTMuNDggMGwtOCAxNEEyIDIgMCAwIDAgNCAyMWgxNmEyIDIgMCAwIDAgMS43My0zWiIvPjxwYXRoIGQ9Ik0xMiA5djQiLz48cGF0aCBkPSJNMTIgMTdoLjAxIi8+PC9zdmc+" />
+			<span id="error_text"></span>
 		</div>
 
-		<div id="input">
-			<input id="directory_picker" type="file" accept=".." webkitdirectory multiple />
+		<div class="border-b-2 border-b-gray-200 pb-4 flex justify-center items-center">
+			<input
+				class="block w-3/5 border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400"
+				id="directory_picker" type="file" accept=".." webkitdirectory multiple>
 		</div>
 
-		<div id="audio_grid">
+		<div class="mt-4 w-full grid gap-4 grid-cols-4" id="audio_grid">
 		</div>
 	</main>
 </body>

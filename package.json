@@ -1,0 +1,22 @@
+{
+  "name": "soundboard",
+  "version": "UNVERSIONED",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "tailwind": "npx tailwindcss -i styles.css -o ./build/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jamalam360/soundboard.git"
+  },
+  "author": "Jamalam",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Jamalam360/soundboard/issues"
+  },
+  "homepage": "https://github.com/Jamalam360/soundboard#readme",
+  "devDependencies": {
+    "tailwindcss": "^3.3.5"
+  }
+}
