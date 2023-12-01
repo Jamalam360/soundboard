@@ -8,8 +8,6 @@ const defaultBackColor = "rgb(153 27 27)";
 
 let audioCtx = null;
 
-reportError("Test error here");
-
 directoryPicker.onchange = (e) => {
   e.preventDefault();
   audioCtx = new AudioContext();
