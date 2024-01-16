@@ -534,6 +534,18 @@ video {
   --tw-backdrop-sepia:  ;
 }
 
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.relative {
+  position: relative;
+}
+
+.-z-10 {
+  z-index: -10;
+}
+
 .m-4 {
   margin: 1rem;
 }

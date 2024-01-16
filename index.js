@@ -221,19 +221,18 @@ function colorNameToHex(colorName) {
 
 // If debug is enabled, intercepts console.logs and errors, and prints them to the page. Debugging on Safari is awkward.
 if (debugEnabled) {
-  errorDiv.style.display = "block";
+  const debugDiv = document.createElement("div");
+  errorDiv.parentElement.append(debugDiv);
 
   const log = console.log;
   console.log = function () {
     log.apply(console, arguments);
     let msg = Array.from(arguments).join(" ");
-    errorDiv.innerHTML += `${msg}<br>`;
-    errorDiv.style.display = "block";
+    debugDiv.innerHTML += `${msg}<br>`;
   };
 
   window.onerror = function (msg, source, lineno, colno, error) {
-    errorDiv.innerHTML += `${msg}, ${source}, ${lineno}, ${colno}, ${error}<br>`;
-    errorDiv.style.display = "block";
+    debugDiv.innerHTML += `${msg}, ${source}, ${lineno}, ${colno}, ${error}<br>`;
 
     return false;
   };
