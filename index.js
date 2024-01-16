@@ -111,13 +111,16 @@ async function playAudio(div) {
   }
 
   const buffer = buffers[div.filename];
+  console.log(buffer);
   const source = audioCtx.createBufferSource();
+  console.log(source);
   source.buffer = buffer;
   source.connect(audioCtx.destination);
   console.timeEnd(`load_${div.filename}`);
 
   console.time(`play_${div.filename}`);
   source.start();
+  console.log(source);
   div.source = source;
   div.playing = true;
   div.style.borderColor = "rgb(229 231 235)";
