@@ -11,7 +11,7 @@ let audioCtx = null;
 
 directoryPicker.onchange = async (e) => {
   e.preventDefault();
-  audioCtx = new AudioContext();
+  audioCtx = window.AudioContext || window.webkitAudioContext;
   clearError();
   buffers = {};
   await updateDisplay();
