@@ -13,12 +13,12 @@ directoryPicker.onchange = async (e) => {
   e.preventDefault();
   audioCtx = new AudioContext();
   clearError();
+  buffers = {};
   await updateDisplay();
 };
 
 // Reads in the new files and creates elements for all of them in audio_grid
 async function updateDisplay() {
-  buffers = {};
   const files = directoryPicker.files;
 
   if (files == null || files.length === 0) {
