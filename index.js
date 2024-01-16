@@ -37,9 +37,8 @@ async function updateDisplay() {
     promises.push(loadAudio(file));
 
     let div = document.createElement("div");
-    let title = createItemTitle(file);
 
-    div.append(title);
+    div.append(createItemTitle(file));
     div.playing = false;
     div.filename = file.name;
     div.mediaType = file.name.endsWith("mp3") ? "audio/mp3" : "audio/wav";
@@ -49,13 +48,13 @@ async function updateDisplay() {
     div.normalBackColor = backgroundColor;
     div.style.color = color;
     div.style.borderColor = backgroundColor;
+    div.classList.add("audio_file");
 
     div.addEventListener("click", (e) => {
       e.preventDefault();
       playAudio(div);
     });
 
-    div.classList.add("audio_file");
     audioGrid.append(div);
   }
 
@@ -89,6 +88,16 @@ async function playAudio(div) {
     return;
   }
 
+  if (!div.filename) {
+    reportError("Div does not have an associated filename");
+    return;
+  }
+
+  if (!buffers[div.filename]) {
+    reportError("Buffer not found");
+    return;
+  }
+
   if (div.playing) {
     if (div.source != null) {
       div.source.stop();
@@ -112,16 +121,21 @@ async function playAudio(div) {
   );
   console.time(`play_${div.filename}`);
 
+  console.log("before source start");
   source.start();
+  console.log("after source start");
   div.source = source;
   div.playing = true;
   div.style.borderColor = "rgb(229 231 235)";
+
 
   source.onended = () => {
     div.style.borderColor = div.normalBackColor;
     div.playing = false;
     console.timeEnd(`play_${div.filename}`);
   };
+
+  console.log(source.onended);
 }
 
 function createItemTitle(file) {
