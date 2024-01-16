@@ -34,6 +34,8 @@ async function updateDisplay() {
       continue;
     }
 
+    promises.push(loadAudio(file));
+
     let div = document.createElement("div");
     let title = createItemTitle(file);
 
@@ -47,8 +49,6 @@ async function updateDisplay() {
     div.normalBackColor = backgroundColor;
     div.style.color = color;
     div.style.borderColor = backgroundColor;
-
-    promises = [...promises, loadAudio(file)];
 
     div.onclick = (e) => {
       e.preventDefault();
