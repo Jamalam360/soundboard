@@ -16,6 +16,9 @@ directoryPicker.onchange = async (e) => {
     audioCtx = new AudioContext();
   } else if (window.webkitAudioContext) {
     audioCtx = new webkitAudioContext();
+  } else {
+    reportError("Web Audio API not available");
+    return;
   }
 
   clearError();
@@ -77,7 +80,7 @@ async function loadAudio(file) {
   console.log(`loading ${file.name}`);
   reader.onload = (ev) => {
     console.log(`loaded ${file.name}, decoding...`);
-    audioCtx.decodeAudioData(ev.target.result).then((buffer) => {
+    audioCtx.decodeAudioData(ev.target.result, (buffer) => {
       console.log(`decoded ${file.name}`);
       buffers[file.name] = buffer;
     });
