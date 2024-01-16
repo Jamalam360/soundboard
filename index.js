@@ -50,10 +50,10 @@ async function updateDisplay() {
     div.style.color = color;
     div.style.borderColor = backgroundColor;
 
-    div.onclick = (e) => {
+    div.addEventListener("click", (e) => {
       e.preventDefault();
       playAudio(div);
-    };
+    });
 
     div.classList.add("audio_file");
     audioGrid.append(div);
