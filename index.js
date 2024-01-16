@@ -6,17 +6,19 @@ const audioGrid = document.getElementById("audio_grid");
 
 const defaultBackColor = "rgb(153 27 27)";
 
+let buffers = {};
 let audioCtx = null;
 
-directoryPicker.onchange = (e) => {
+directoryPicker.onchange = async (e) => {
   e.preventDefault();
   audioCtx = new AudioContext();
   clearError();
-  updateDisplay();
+  await updateDisplay();
 };
 
 // Reads in the new files and creates elements for all of them in audio_grid
-function updateDisplay() {
+async function updateDisplay() {
+  buffers = {};
   const files = directoryPicker.files;
 
   if (files == null || files.length === 0) {
@@ -25,66 +27,97 @@ function updateDisplay() {
   }
 
   audioGrid.innerHTML = "";
+  const promises = [];
 
   for (const file of files) {
     if (!file.name.endsWith("mp3") && !file.name.endsWith("wav")) {
       continue;
     }
 
-    let gridItem = document.createElement("div");
+    let div = document.createElement("div");
     let title = createItemTitle(file);
 
-    gridItem.append(title);
-    gridItem.playing = false;
+    div.append(title);
+    div.playing = false;
+    div.filename = file.name;
+    div.mediaType = file.name.endsWith("mp3") ? "audio/mp3" : "audio/wav";
 
     let { color, backgroundColor } = getColors(file.name);
-    gridItem.style.backgroundColor = backgroundColor;
-    gridItem.normalBackColor = backgroundColor;
-    gridItem.style.color = color;
-    gridItem.style.borderColor = backgroundColor;
+    div.style.backgroundColor = backgroundColor;
+    div.normalBackColor = backgroundColor;
+    div.style.color = color;
+    div.style.borderColor = backgroundColor;
 
-    gridItem.onclick = (e) => {
+    promises = [...promises, loadAudio(file)];
+
+    div.onclick = (e) => {
       e.preventDefault();
-      playAudio(file, gridItem);
+      playAudio(div);
     };
 
-    gridItem.classList.add("audio_file");
-    audioGrid.append(gridItem);
+    div.classList.add("audio_file");
+    audioGrid.append(div);
   }
+
+  await Promise.all(promises);
 }
 
-async function playAudio(file, div) {
+async function loadAudio(file) {
+  if (audioCtx === null) {
+    reportError("Audio context is not initialized");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (ev) =>
+    audioCtx.decodeAudioData(ev.target.result).then((buffer) => {
+      buffers[file.name] = buffer;
+    });
+
+  reader.readAsArrayBuffer(file);
+}
+
+async function playAudio(div) {
+  console.time(`load_${div.filename}`);
+
   if (audioCtx === null) {
     reportError("Audio context is not initialized");
     return;
   }
 
   if (div.playing) {
-    if (div.audio !== null) {
-      div.audio.pause();
-      div.audio.currentTime = 0;
+    if (div.source != null) {
+      div.source.stop();
+      div.source.disconnect();
+      div.source = null;
       div.style.borderColor = div.normalBackColor;
       div.playing = false;
     }
-
-    return;
   }
 
-  const reader = new FileReader();
-  reader.onload = function (event) {
-    const audio = new Audio(event.target.result);
-    audio.play();
-    audio.onended = () => {
-      div.style.borderColor = div.normalBackColor;
-      div.playing = false;
-    };
+  const buffer = buffers[div.filename];
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioCtx.destination);
+  console.timeEnd(`load_${div.filename}`);
 
-    div.audio = audio;
-  };
+  console.log(
+    `${buffer.length} sample frames at ${audioCtx.sampleRate}Hz ==> ${
+      buffer.length / audioCtx.sampleRate
+    }s`
+  );
+  console.time(`play_${div.filename}`);
 
+  source.start();
+  div.source = source;
   div.playing = true;
   div.style.borderColor = "rgb(229 231 235)";
-  reader.readAsDataURL(file);
+
+  source.onended = () => {
+    div.style.borderColor = div.normalBackColor;
+    div.playing = false;
+    console.timeEnd(`play_${div.filename}`);
+  };
 }
 
 function createItemTitle(file) {
@@ -166,7 +199,7 @@ function colorNameToHex(colorName) {
   return hexColor;
 }
 
-// If debug is enabled, intercepts console.logs and errors, and prints them to the page
+// If debug is enabled, intercepts console.logs and errors, and prints them to the page. Debugging on Safari is awkward.
 if (debugEnabled) {
   errorDiv.style.display = "block";
 
