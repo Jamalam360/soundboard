@@ -1,19 +1,41 @@
-import { AudioContext as PolyAudioContext } from 'https://jspm.dev/standardized-audio-context';
+import {
+  AudioContext,
+  isSupported as isWebAudioSupported,
+  AudioBufferSourceNode,
+} from "standardized-audio-context";
+
+declare global {
+  interface HTMLDivElement {
+    playing: boolean | null;
+    filename: string | null;
+    mediaType: string | null;
+    source: AudioBufferSourceNode<AudioContext> | null;
+    normalBackColor: string | null;
+  }
+}
 
 const debugEnabled = true;
-const error = document.getElementById("error_text");
-const errorDiv = document.getElementById("error_container");
-const directoryPicker = document.getElementById("directory_picker");
-const audioGrid = document.getElementById("audio_grid");
+const error = document.getElementById("error_text") as HTMLSpanElement;
+const errorDiv = document.getElementById("error_container") as HTMLDivElement;
+const directoryPicker = document.getElementById(
+  "directory_picker"
+) as HTMLInputElement;
+const audioGrid = document.getElementById("audio_grid") as HTMLDivElement;
 
 const defaultBackColor = "rgb(153 27 27)";
 
-let buffers = {};
-let audioCtx = null;
+let buffers: Record<string, AudioBuffer> = {};
+let audioCtx: AudioContext | null = null;
 
 directoryPicker.onchange = async (e) => {
   e.preventDefault();
-  audioCtx = new PolyAudioContext()
+
+  if (!(await isWebAudioSupported())) {
+    reportError("Web Audio API is not supported");
+    return;
+  }
+
+  audioCtx = new AudioContext();
   clearError();
   buffers = {};
   await updateDisplay();
@@ -31,7 +53,8 @@ async function updateDisplay() {
   audioGrid.innerHTML = "";
   const promises = [];
 
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
     if (!file.name.endsWith("mp3") && !file.name.endsWith("wav")) {
       continue;
     }
@@ -63,7 +86,7 @@ async function updateDisplay() {
   await Promise.all(promises);
 }
 
-async function loadAudio(file) {
+async function loadAudio(file: File) {
   if (audioCtx === null) {
     reportError("Audio context is not initialized");
     return;
@@ -73,7 +96,7 @@ async function loadAudio(file) {
   console.log(`loading ${file.name}`);
   reader.onload = (ev) => {
     console.log(`loaded ${file.name}, decoding...`);
-    audioCtx.decodeAudioData(ev.target.result, (buffer) => {
+    audioCtx.decodeAudioData(ev.target.result as ArrayBuffer, (buffer) => {
       console.log(`decoded ${file.name}`);
       buffers[file.name] = buffer;
     });
@@ -82,7 +105,7 @@ async function loadAudio(file) {
   reader.readAsArrayBuffer(file);
 }
 
-async function playAudio(div) {
+async function playAudio(div: HTMLDivElement) {
   console.time(`load_${div.filename}`);
 
   if (audioCtx === null) {
@@ -111,16 +134,13 @@ async function playAudio(div) {
   }
 
   const buffer = buffers[div.filename];
-  console.log(buffer);
   const source = audioCtx.createBufferSource();
-  console.log(source);
   source.buffer = buffer;
   source.connect(audioCtx.destination);
   console.timeEnd(`load_${div.filename}`);
 
   console.time(`play_${div.filename}`);
   source.start();
-  console.log(source);
   div.source = source;
   div.playing = true;
   div.style.borderColor = "rgb(229 231 235)";
@@ -132,7 +152,7 @@ async function playAudio(div) {
   };
 }
 
-function createItemTitle(file) {
+function createItemTitle(file: File) {
   let title = document.createElement("span");
   let last_index = file.name.lastIndexOf("_");
 
@@ -148,7 +168,7 @@ function createItemTitle(file) {
   return title;
 }
 
-function reportError(errorMessage) {
+function reportError(errorMessage: string) {
   error.innerHTML = errorMessage;
   errorDiv.style.display = "flex";
 }
@@ -158,7 +178,7 @@ function clearError() {
   errorDiv.style.display = "none";
 }
 
-function getColors(filename) {
+function getColors(filename: string) {
   let filenameNoExt = filename.slice(0, -4);
   let backColor = filenameNoExt.split("_").pop();
   if (backColor == null || !CSS.supports("color", backColor)) {
@@ -168,7 +188,7 @@ function getColors(filename) {
   return { color: textColor, backgroundColor: backColor };
 }
 
-function getContrastColor(hexColor) {
+function getContrastColor(hexColor: string) {
   // Convert hex color to RGB
   let r = parseInt(hexColor.substr(1, 2), 16);
   let g = parseInt(hexColor.substr(3, 2), 16);
@@ -181,7 +201,7 @@ function getContrastColor(hexColor) {
   return luminance > 0.5 ? "#000000" : "#FFFFFF"; // Return black for light backgrounds, white for dark backgrounds
 }
 
-function colorNameToHex(colorName) {
+function colorNameToHex(colorName: string) {
   // Create an HTML element (an invisible div)
   let elem = document.createElement("div");
   elem.style.color = colorName;

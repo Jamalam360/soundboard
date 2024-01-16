@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+		"module": "es6",
+    "target": "es5",
+    "outDir": "build",
+    "lib": ["es5", "es6", "dom"],
+    "moduleResolution": "node"
+  },
+  "include": [
+    "./index.ts"
+  ]
+}
