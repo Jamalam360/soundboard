@@ -1,4 +1,3 @@
-const AudioContext = window.AudioContext || window.webkitAudioContext;
 const debugEnabled = true;
 const error = document.getElementById("error_text");
 const errorDiv = document.getElementById("error_container");
@@ -12,7 +11,13 @@ let audioCtx = null;
 
 directoryPicker.onchange = async (e) => {
   e.preventDefault();
-  audioCtx = new AudioContext();
+  
+  if (window.AudioContext) {
+    audioCtx = new AudioContext();
+  } else if (window.webkitAudioContext) {
+    audioCtx = new webkitAudioContext();
+  }
+
   clearError();
   buffers = {};
   await updateDisplay();
