@@ -1,4 +1,4 @@
-const debugEnabled = false;
+const debugEnabled = true;
 const error = document.getElementById("error_text");
 const errorDiv = document.getElementById("error_container");
 const directoryPicker = document.getElementById("directory_picker");
@@ -69,10 +69,14 @@ async function loadAudio(file) {
   }
 
   const reader = new FileReader();
-  reader.onload = (ev) =>
+  console.log(`loading ${file.name}`);
+  reader.onload = (ev) => {
+    console.log(`loaded ${file.name}, decoding...`);
     audioCtx.decodeAudioData(ev.target.result).then((buffer) => {
+      console.log(`decoded ${file.name}`);
       buffers[file.name] = buffer;
     });
+  };
 
   reader.readAsArrayBuffer(file);
 }
