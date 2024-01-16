@@ -1,3 +1,5 @@
+import { AudioContext as PolyAudioContext } from 'https://jspm.dev/standardized-audio-context';
+
 const debugEnabled = true;
 const error = document.getElementById("error_text");
 const errorDiv = document.getElementById("error_container");
@@ -11,16 +13,7 @@ let audioCtx = null;
 
 directoryPicker.onchange = async (e) => {
   e.preventDefault();
-  
-  if (window.AudioContext) {
-    audioCtx = new AudioContext();
-  } else if (window.webkitAudioContext) {
-    audioCtx = new webkitAudioContext();
-  } else {
-    reportError("Web Audio API not available");
-    return;
-  }
-
+  audioCtx = new PolyAudioContext()
   clearError();
   buffers = {};
   await updateDisplay();
@@ -90,63 +83,50 @@ async function loadAudio(file) {
 }
 
 async function playAudio(div) {
-  try {
-    console.time(`load_${div.filename}`);
+  console.time(`load_${div.filename}`);
 
-    if (audioCtx === null) {
-      reportError("Audio context is not initialized");
-      return;
-    }
+  if (audioCtx === null) {
+    reportError("Audio context is not initialized");
+    return;
+  }
 
-    if (!div.filename) {
-      reportError("Div does not have an associated filename");
-      return;
-    }
+  if (!div.filename) {
+    reportError("Div does not have an associated filename");
+    return;
+  }
 
-    if (!buffers[div.filename]) {
-      reportError("Buffer not found");
-      return;
-    }
+  if (!buffers[div.filename]) {
+    reportError("Buffer not found");
+    return;
+  }
 
-    if (div.playing) {
-      if (div.source != null) {
-        div.source.stop();
-        div.source.disconnect();
-        div.source = null;
-        div.style.borderColor = div.normalBackColor;
-        div.playing = false;
-      }
-    }
-
-    const buffer = buffers[div.filename];
-    const source = audioCtx.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioCtx.destination);
-    console.timeEnd(`load_${div.filename}`);
-
-    console.log(
-      `${buffer.length} sample frames at ${audioCtx.sampleRate}Hz ==> ${buffer.length / audioCtx.sampleRate
-      }s`
-    );
-    console.time(`play_${div.filename}`);
-
-    console.log("before source start");
-    source.start();
-    console.log("after source start");
-    div.source = source;
-    div.playing = true;
-    div.style.borderColor = "rgb(229 231 235)";
-
-    source.onended = () => {
+  if (div.playing) {
+    if (div.source != null) {
+      div.source.stop();
+      div.source.disconnect();
+      div.source = null;
       div.style.borderColor = div.normalBackColor;
       div.playing = false;
-      console.timeEnd(`play_${div.filename}`);
-    };
-
-    console.log(source.onended);
-  } catch (err) {
-    console.log(err);
+    }
   }
+
+  const buffer = buffers[div.filename];
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioCtx.destination);
+  console.timeEnd(`load_${div.filename}`);
+
+  console.time(`play_${div.filename}`);
+  source.start();
+  div.source = source;
+  div.playing = true;
+  div.style.borderColor = "rgb(229 231 235)";
+
+  source.onended = () => {
+    div.style.borderColor = div.normalBackColor;
+    div.playing = false;
+    console.timeEnd(`play_${div.filename}`);
+  };
 }
 
 function createItemTitle(file) {
