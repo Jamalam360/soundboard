@@ -8,7 +8,7 @@
 	<title>Soundboard</title>
 </head>
 
-<body style="background-color: black; color: antiquewhite">
+<body class="min-h-full text-gray-300">
 	<script src="./build/index.js" defer></script>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,22 +16,32 @@
 	<link rel="stylesheet" href="styles.css">
 	<link rel="stylesheet" href="build/output.css">
 
-	<main class="m-4 text-xl font-semibold text-gray-200">
-		<div id="error_container" class="flex-row items-center w-3/5 h-12 p-2 mx-auto mb-3 space-x-2 bg-red-600 rounded-lg"
-			style="display: none;">
-			<img
-				src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNlNWU3ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hbGVydC10cmlhbmdsZSI+PHBhdGggZD0ibTIxLjczIDE4LTgtMTRhMiAyIDAgMCAwLTMuNDggMGwtOCAxNEEyIDIgMCAwIDAgNCAyMWgxNmEyIDIgMCAwIDAgMS43My0zWiIvPjxwYXRoIGQ9Ik0xMiA5djQiLz48cGF0aCBkPSJNMTIgMTdoLjAxIi8+PC9zdmc+" />
-			<span id="error_text"></span>
+	<main class="p-3 text-gray-200">
+		<div class="w-4/5 mx-auto border-b border-gray-200">
+			<div class="flex flex-col">
+				<div id="error_container"
+					class="flex-row items-center w-full h-10 p-2 mb-3 space-x-2 bg-red-600 rounded-lg"
+					style="display: none;">
+					<img
+						src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNlNWU3ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hbGVydC10cmlhbmdsZSI+PHBhdGggZD0ibTIxLjczIDE4LTgtMTRhMiAyIDAgMCAwLTMuNDggMGwtOCAxNEEyIDIgMCAwIDAgNCAyMWgxNmEyIDIgMCAwIDAgMS43My0zWiIvPjxwYXRoIGQ9Ik0xMiA5djQiLz48cGF0aCBkPSJNMTIgMTdoLjAxIi8+PC9zdmc+" />
+					<span id="error_text"></span>
+				</div>
+
+				<div class="flex items-center justify-between pb-3 space-x-3">
+					<input
+						class="block w-full h-10 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none"
+						id="directory_input" type="file" accept=".." webkitdirectory multiple>
+					<button id="toggle_debug_button"
+						class="h-10 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer min-w-[25%] hover:bg-gray-600 hover:text-gray-200 focus:outline-none">
+						></button>
+				</div>
+			</div>
 		</div>
 
-		<div class="flex items-center justify-center pb-4 border-b-2 border-b-gray-200">
-			<input
-				class="block w-3/5 text-gray-400 placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none"
-				id="directory_picker" type="file" accept=".." webkitdirectory multiple>
+		<div class="grid w-full grid-cols-4 gap-3 py-3" id="audio_grid">
 		</div>
 
-		<div class="grid w-full grid-cols-4 gap-4 mt-4" id="audio_grid">
-		</div>
+		<div id="debug_separator" style="display: none;" class="w-4/5 mx-auto border-b border-gray-200"></div>
 	</main>
 </body>
 
