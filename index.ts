@@ -9,7 +9,7 @@ declare global {
     playing: boolean | null;
     filename: string | null;
     mediaType: string | null;
-    source: AudioBufferSourceNode<AudioContext> | null;
+    audio: HTMLAudioElement | null;
     normalBackColor: string | null;
   }
 }
@@ -24,7 +24,8 @@ const audioGrid = document.getElementById("audio_grid") as HTMLDivElement;
 
 const defaultBackColor = "rgb(153 27 27)";
 
-let buffers: Record<string, AudioBuffer> = {};
+let fileAudio: Record<string, HTMLAudioElement> = {};
+// TODO: why is this needed? 
 let audioCtx: AudioContext | null = null;
 
 directoryPicker.onchange = async (e) => {
@@ -37,7 +38,7 @@ directoryPicker.onchange = async (e) => {
 
   audioCtx = new AudioContext();
   clearError();
-  buffers = {};
+  fileAudio = {};
   await updateDisplay();
 };
 
@@ -95,14 +96,13 @@ async function loadAudio(file: File) {
   const reader = new FileReader();
   console.log(`loading ${file.name}`);
   reader.onload = (ev) => {
-    console.log(`loaded ${file.name}, decoding...`);
-    audioCtx.decodeAudioData(ev.target.result as ArrayBuffer, (buffer) => {
-      console.log(`decoded ${file.name}`);
-      buffers[file.name] = buffer;
-    });
+    console.log(`loaded ${file.name}, buffering it`);
+    fileAudio[file.name] = new Audio(ev.target.result as string);
+    fileAudio[file.name].play();
+    setTimeout(fileAudio[file.name].pause, 10);
   };
 
-  reader.readAsArrayBuffer(file);
+  reader.readAsDataURL(file);
 }
 
 async function playAudio(div: HTMLDivElement) {
@@ -118,34 +118,29 @@ async function playAudio(div: HTMLDivElement) {
     return;
   }
 
-  if (!buffers[div.filename]) {
+  if (!fileAudio[div.filename]) {
     reportError("Buffer not found");
     return;
   }
 
   if (div.playing) {
-    if (div.source != null) {
-      div.source.stop();
-      div.source.disconnect();
-      div.source = null;
+    if (div.audio != null) {
+      div.audio.pause();
+      div.audio = null;
       div.style.borderColor = div.normalBackColor;
       div.playing = false;
     }
   }
 
-  const buffer = buffers[div.filename];
-  const source = audioCtx.createBufferSource();
-  source.buffer = buffer;
-  source.connect(audioCtx.destination);
+  const audio = fileAudio[div.filename];
   console.timeEnd(`load_${div.filename}`);
 
   console.time(`play_${div.filename}`);
-  source.start();
-  div.source = source;
+  div.audio = audio;
   div.playing = true;
   div.style.borderColor = "rgb(229 231 235)";
 
-  source.onended = () => {
+  audio.onended = () => {
     div.style.borderColor = div.normalBackColor;
     div.playing = false;
     console.timeEnd(`play_${div.filename}`);
