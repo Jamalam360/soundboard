@@ -3,6 +3,7 @@
   "version": "UNVERSIONED",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "css": "npx tailwindcss -i styles.css -o ./build/output.css",
     "css-watch": "npx tailwindcss -i styles.css -o ./build/output.css --watch",
@@ -21,9 +22,11 @@
   },
   "homepage": "https://github.com/Jamalam360/soundboard#readme",
   "devDependencies": {
+    "husky": "^8.0.0",
     "tailwindcss": "^3.3.5",
-    "webpack-cli": "^5.1.4",
-    "husky": "^8.0.0"
+    "webpack-cli": "^5.1.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "crunker": "^2.3.0"
+  }
 }

@@ -1,8 +1,9 @@
+import Crunker from "crunker";
 import { setError } from "./debug.mjs";
 import { play_border_color } from "./styles.mjs";
 
 let fileDataUris: Record<string, [HTMLDivElement, string]> = {};
-let fileAudio: Record<string, HTMLAudioElement> = {};
+let audio: HTMLAudioElement | null = null;
 
 export async function loadAudio(file: File, div: HTMLDivElement) {
   const reader = new FileReader();
@@ -14,53 +15,52 @@ export async function loadAudio(file: File, div: HTMLDivElement) {
 }
 
 export async function bufferAllAudio() {
-  fileAudio = {};
+  // @ts-ignore don't know why this is needed
+  const crunker: Crunker = new Crunker.default({});
 
-  for (let filename of Object.keys(fileDataUris)) {
-    const [div, dataUri] = fileDataUris[filename];
-    const audio = new Audio(dataUri);
-    await audio.play();
-    audio.pause();
-    fileAudio[filename] = audio;
+  await crunker
+    .fetchAudio(...Object.keys(fileDataUris).map((x) => fileDataUris[x][1]))
+    .then((buffers) => {
+      let curr = 0;
+      for (let i = 0; i < buffers.length; i++) {
+        const buffer = buffers[i];
+        const filename = Object.keys(fileDataUris)[i];
+        const [div, _] = fileDataUris[filename];
 
-    div.classList.remove("disabled");
-    div.addEventListener("click", (e) => {
-      e.preventDefault();
-      playAudio(div);
+        div.start = curr;
+        div.length = buffer.duration;
+        curr += buffer.duration;
+
+        div.classList.remove("disabled");
+        div.addEventListener("click", (e) => {
+          e.preventDefault();
+          playAudio(div);
+        });
+      }
+
+      return crunker.concatAudio(buffers);
+    })
+    .then((merged) => crunker.export(merged, "audio/mp3"))
+    .then((output) => {
+      audio = output.element;
     });
-  }
 }
 
 async function playAudio(div: HTMLDivElement) {
-  if (!div.filename) {
-    setError("Div does not have an associated filename");
-    return;
-  }
-
-  if (!fileAudio[div.filename]) {
+  if (!audio) {
     setError("Audio element not found; did you remember to click load?");
     return;
   }
 
-  if (div.playing) {
-    if (div.audio != null) {
-      div.audio.pause();
-      div.audio = null;
-      div.style.borderColor = div.color;
-      div.playing = false;
-      return;
-    }
-  }
-
-  const audio = fileAudio[div.filename];
-  audio.currentTime = 0;
-  audio.play();
-  div.audio = audio;
-  div.playing = true;
   div.style.borderColor = play_border_color;
-
-  audio.onended = () => {
+  const start = div.start || 0;
+  const length = div.length || 0;
+  audio.currentTime = start;
+  audio.play();
+  console.log("start " + div.start + " for " + div.length);
+  setTimeout(() => {
     div.style.borderColor = div.color;
-    div.playing = false;
-  };
+    audio.pause();
+    console.log("finished playing that");
+  }, length * 1000);
 }

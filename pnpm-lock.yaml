@@ -1,5 +1,10 @@
 lockfileVersion: '6.0'
 
+dependencies:
+  crunker:
+    specifier: ^2.3.0
+    version: 2.3.0
+
 devDependencies:
   husky:
     specifier: ^8.0.0
@@ -413,6 +418,10 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crunker@2.3.0:
+    resolution: {integrity: sha512-T93Xvn7fjgRM0jvem897+LZ3v9n2X/bbRgOeHEl6ZEmxOnVnkoq/9OSErlvDTDL5ubs9eD8YoZ/0rB/JRDB4cg==}
+    dev: false
 
   /cssesc@3.0.0:
     resolution: {integrity: sha512-/Tb/JcjK111nNScGob5MNtsntNM1aCNUDipB/TkwZFhyDrrE47SOx/18wF2bbjgc3ZzCSKW1T5nt5EbFoAz/Vg==}

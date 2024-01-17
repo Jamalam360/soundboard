@@ -5,10 +5,9 @@ import { getColors } from "./styles.mjs";
 
 declare global {
   interface HTMLDivElement {
-    playing: boolean | null;
-    filename: string | null;
-    audio: HTMLAudioElement | null;
     color: string | null;
+    start: number | null;
+    length: number | null;
   }
 }
 
@@ -44,9 +43,6 @@ async function updateDisplay() {
     loading_processes.push(loadAudio(file, div));
 
     div.append(createItemTitle(file));
-    div.playing = false;
-    div.filename = file.name;
-
     let { color, backgroundColor } = getColors(file.name);
     div.style.backgroundColor = backgroundColor;
     div.color = backgroundColor;
