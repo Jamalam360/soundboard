@@ -1,6 +1,6 @@
 import { loadAudio } from "./audio.mjs";
 import { clearError } from "./debug.mjs";
-import { audio_grid, directory_input } from "./elements.mjs";
+import { audio_grid, directory_input, load_button } from "./elements.mjs";
 import { getColors } from "./styles.mjs";
 
 declare global {
@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-directory_input.onchange = async (e) => {
+load_button.onclick = async (e) => {
   e.preventDefault();
   clearError();
   await updateDisplay();
@@ -20,12 +20,12 @@ directory_input.onchange = async (e) => {
 
 async function updateDisplay() {
   const files = directory_input.files;
+  audio_grid.innerHTML = "";
 
   if (files == null || files.length === 0) {
     return;
   }
 
-  audio_grid.innerHTML = "";
   const loading_processes = [];
 
   for (let i = 0; i < files.length; i++) {

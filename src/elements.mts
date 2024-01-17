@@ -1,6 +1,9 @@
 export const toggle_debug_button = document.getElementById(
   "toggle_debug_button"
 ) as HTMLButtonElement;
+export const load_button = document.getElementById(
+  "load_button"
+) as HTMLButtonElement;
 export const debug_separator = document.getElementById(
   "debug_separator"
 ) as HTMLDivElement;

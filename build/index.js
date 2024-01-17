@@ -3,6 +3,9 @@
   var toggle_debug_button = document.getElementById(
     "toggle_debug_button"
   );
+  var load_button = document.getElementById(
+    "load_button"
+  );
   var debug_separator = document.getElementById(
     "debug_separator"
   );
@@ -166,17 +169,17 @@
   }
 
   // src/index.mts
-  directory_input.onchange = async (e) => {
+  load_button.onclick = async (e) => {
     e.preventDefault();
     clearError();
     await updateDisplay();
   };
   async function updateDisplay() {
     const files = directory_input.files;
+    audio_grid.innerHTML = "";
     if (files == null || files.length === 0) {
       return;
     }
-    audio_grid.innerHTML = "";
     const loading_processes = [];
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
