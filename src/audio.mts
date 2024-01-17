@@ -6,8 +6,10 @@ let fileDataUris: Record<string, [HTMLDivElement, string]> = {};
 let audio: HTMLAudioElement | null = null;
 
 export async function loadAudio(file: File, div: HTMLDivElement) {
+  console.time(`load_audio_${file.name}`);
   const reader = new FileReader();
   reader.onload = async (ev) => {
+    console.timeEnd(`load_audio_${file.name}`);
     fileDataUris[file.name] = [div, ev.target.result as string];
   };
 
@@ -15,6 +17,7 @@ export async function loadAudio(file: File, div: HTMLDivElement) {
 }
 
 export async function bufferAllAudio() {
+  console.time("buffer_all_audio");
   // @ts-ignore don't know why this is needed
   const crunker: Crunker = new Crunker.default({});
 
@@ -33,15 +36,18 @@ export async function bufferAllAudio() {
 
         div.classList.remove("disabled");
         div.addEventListener("click", (e) => {
-          e.preventDefault();
+          e.preventDefault();          
           playAudio(div);
         });
       }
+
+      console.log(`Total concatenated length: ${curr}`);
 
       return crunker.concatAudio(buffers);
     })
     .then((merged) => crunker.export(merged, "audio/mp3"))
     .then((output) => {
+      console.timeEnd("buffer_all_audio");
       audio = output.element;
     });
 }
@@ -56,11 +62,13 @@ async function playAudio(div: HTMLDivElement) {
   const start = div.start || 0;
   const length = div.length || 0;
   audio.currentTime = start;
+  console.log(`Playing ${div.innerText} from ${start}s for ${length}s`);
+  console.time(`play_${div.innerText}`);
   audio.play();
-  console.log("start " + div.start + " for " + div.length);
+  console.timeEnd(`play_${div.innerText}`);
   setTimeout(() => {
     div.style.borderColor = div.color;
     audio.pause();
-    console.log("finished playing that");
+    console.log(`${div.innerText} finished playing`);
   }, length * 1000);
 }

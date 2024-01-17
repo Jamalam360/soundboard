@@ -16,7 +16,9 @@ export function clearError() {
   error_container.style.display = "none";
 }
 
-let previous_functions: [typeof console.log, typeof window.onerror] | null =
+type PreviousFunctions = [typeof console.log, typeof window.onerror, typeof console.time, typeof console.timeEnd];
+
+let previous_functions: PreviousFunctions | null =
   null;
 
 function createDebugContainer() {
@@ -41,8 +43,8 @@ function destroyDebugContainer() {
 
 function hookConsole(
   debug_container: HTMLDivElement
-): [typeof console.log, typeof window.onerror] {
-  const prev = [console.log, window.onerror];
+): PreviousFunctions {
+  const prev = [console.log, window.onerror, console.time, console.timeEnd];
 
   const log = console.log;
   console.log = function () {
@@ -57,12 +59,32 @@ function hookConsole(
     return false;
   };
 
-  return prev as [typeof console.log, typeof window.onerror];
+  const times = new Map<string, number>();
+  const time = console.time;
+  console.time = function (label) {
+    times.set(label, performance.now());
+    time.apply(console, arguments);
+  };
+
+  const timeEnd = console.timeEnd;
+  console.timeEnd = function (label) {
+    const start = times.get(label);
+    if (start) {
+      const end = performance.now();
+      debug_container.innerHTML += `${label}: ${end - start}ms<br>`;
+    }
+
+    timeEnd.apply(console, arguments);
+  };
+
+  return prev as PreviousFunctions;
 }
 
-function unhookConsole(prev: [typeof console.log, typeof window.onerror]) {
+function unhookConsole(prev: PreviousFunctions) {
   console.log = prev[0];
   window.onerror = prev[1];
+  console.time = prev[2];
+  console.timeEnd = prev[3];
 }
 
 let debug_enabled = localStorage.getItem("debug") === "true";

@@ -24,17 +24,17 @@ load_button.onclick = async (e) => {
 };
 
 async function updateDisplay() {
-  const files = directory_input.files;
   audio_grid.innerHTML = "";
+  const raw_files = directory_input.files;
 
-  if (files == null || files.length === 0) {
+  if (raw_files == null || raw_files.length === 0) {
     return;
   }
 
+  const files = Array.from(raw_files).sort((a, b) => a.name.localeCompare(b.name));
   const loading_processes = [];
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+  for (const file of files) {
     if (!file.name.endsWith("mp3") && !file.name.endsWith("wav")) {
       continue;
     }

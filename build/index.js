@@ -270,7 +270,7 @@
     debug_separator.style.display = "none";
   }
   function hookConsole(debug_container) {
-    const prev = [console.log, window.onerror];
+    const prev = [console.log, window.onerror, console.time, console.timeEnd];
     const log = console.log;
     console.log = function() {
       log.apply(console, arguments);
@@ -281,11 +281,28 @@
       debug_container.innerHTML += `${msg}, ${source}, ${lineno}, ${colno}, ${error}<br>`;
       return false;
     };
+    const times = /* @__PURE__ */ new Map();
+    const time = console.time;
+    console.time = function(label) {
+      times.set(label, performance.now());
+      time.apply(console, arguments);
+    };
+    const timeEnd = console.timeEnd;
+    console.timeEnd = function(label) {
+      const start = times.get(label);
+      if (start) {
+        const end = performance.now();
+        debug_container.innerHTML += `${label}: ${end - start}ms<br>`;
+      }
+      timeEnd.apply(console, arguments);
+    };
     return prev;
   }
   function unhookConsole(prev) {
     console.log = prev[0];
     window.onerror = prev[1];
+    console.time = prev[2];
+    console.timeEnd = prev[3];
   }
   var debug_enabled = localStorage.getItem("debug") === "true";
   if (debug_enabled) {
@@ -346,13 +363,16 @@
   var fileDataUris = {};
   var audio = null;
   async function loadAudio(file, div) {
+    console.time(`load_audio_${file.name}`);
     const reader = new FileReader();
     reader.onload = async (ev) => {
+      console.timeEnd(`load_audio_${file.name}`);
       fileDataUris[file.name] = [div, ev.target.result];
     };
     reader.readAsDataURL(file);
   }
   async function bufferAllAudio() {
+    console.time("buffer_all_audio");
     const crunker = new import_crunker.default.default({});
     await crunker.fetchAudio(...Object.keys(fileDataUris).map((x) => fileDataUris[x][1])).then((buffers) => {
       let curr = 0;
@@ -369,8 +389,10 @@
           playAudio(div);
         });
       }
+      console.log(`Total concatenated length: ${curr}`);
       return crunker.concatAudio(buffers);
     }).then((merged) => crunker.export(merged, "audio/mp3")).then((output) => {
+      console.timeEnd("buffer_all_audio");
       audio = output.element;
     });
   }
@@ -383,12 +405,14 @@
     const start = div.start || 0;
     const length = div.length || 0;
     audio.currentTime = start;
+    console.log(`Playing ${div.innerText} from ${start}s for ${length}s`);
+    console.time(`play_${div.innerText}`);
     audio.play();
-    console.log("start " + div.start + " for " + div.length);
+    console.timeEnd(`play_${div.innerText}`);
     setTimeout(() => {
       div.style.borderColor = div.color;
       audio.pause();
-      console.log("finished playing that");
+      console.log(`${div.innerText} finished playing`);
     }, length * 1e3);
   }
 
@@ -404,14 +428,14 @@
     await bufferAllAudio();
   };
   async function updateDisplay() {
-    const files = directory_input.files;
     audio_grid.innerHTML = "";
-    if (files == null || files.length === 0) {
+    const raw_files = directory_input.files;
+    if (raw_files == null || raw_files.length === 0) {
       return;
     }
+    const files = Array.from(raw_files).sort((a, b) => a.name.localeCompare(b.name));
     const loading_processes = [];
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
+    for (const file of files) {
       if (!file.name.endsWith("mp3") && !file.name.endsWith("wav")) {
         continue;
       }
