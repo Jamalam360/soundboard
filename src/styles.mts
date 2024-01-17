@@ -1,15 +1,15 @@
 export const play_border_color = "rgb(229 231 235)";
-const defaultColor = "rgb(153 27 27)";
+const default_color = "#6b7280";
 
 export function getColors(filename: string) {
-  let backColor = filename.slice(0, -4).split("_").pop();
+  let back_color = filename.slice(0, -4).split("_").pop();
 
-  if (backColor == null || !CSS.supports("color", backColor)) {
-    backColor = defaultColor;
+  if (back_color == null || !CSS.supports("color", back_color)) {
+    back_color = default_color;
   }
 
-  let textColor = getContrastColor(colorNameToHex(backColor));
-  return { color: textColor, backgroundColor: backColor };
+  let text_color = getContrastColor(colorNameToHex(back_color));
+  return { color: text_color, backgroundColor: back_color };
 }
 
 function getContrastColor(hexColor: string) {
@@ -25,10 +25,10 @@ function colorNameToHex(colorName: string) {
   let elem = document.createElement("div");
   elem.style.color = colorName;
   document.body.appendChild(elem);
-  let computedColor = window.getComputedStyle(elem).color;
+  let computed_color = window.getComputedStyle(elem).color;
   document.body.removeChild(elem);
 
-  let hexColor = computedColor.replace(
+  let hexColor = computed_color.replace(
     /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d(?:\.\d+)?))?\)/,
     (_, r, g, b) =>
       "#" +
