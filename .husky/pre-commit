@@ -5,4 +5,4 @@ pnpm run css
 pnpm run build
 
 git add build
-git commit --amend --no-edit --no-verify
+# git commit --amend --no-edit --no-verify
