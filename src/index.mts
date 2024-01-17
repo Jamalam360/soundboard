@@ -1,4 +1,4 @@
-import { loadAudio } from "./audio.mjs";
+import { bufferAllAudio, loadAudio } from "./audio.mjs";
 import { clearError } from "./debug.mjs";
 import { audio_grid, directory_input, load_button } from "./elements.mjs";
 import { getColors } from "./styles.mjs";
@@ -12,10 +12,16 @@ declare global {
   }
 }
 
-load_button.onclick = async (e) => {
+directory_input.onchange = async (e) => {
   e.preventDefault();
   clearError();
   await updateDisplay();
+}
+
+load_button.onclick = async (e) => {
+  e.preventDefault();
+  clearError();
+  await bufferAllAudio();
 };
 
 async function updateDisplay() {

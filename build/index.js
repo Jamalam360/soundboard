@@ -123,20 +123,29 @@
   }
 
   // src/audio.mts
+  var fileDataUri = {};
   var fileAudio = {};
   async function loadAudio(file, div) {
     const reader = new FileReader();
     reader.onload = async (ev) => {
-      fileAudio[file.name] = new Audio(ev.target.result);
-      await fileAudio[file.name].play();
-      fileAudio[file.name].pause();
+      fileDataUri[file.name] = [div, ev.target.result];
+    };
+    reader.readAsDataURL(file);
+  }
+  async function bufferAllAudio() {
+    fileAudio = {};
+    for (let filename in Object.keys(fileDataUri)) {
+      const [div, dataUri] = fileDataUri[filename];
+      const audio = new Audio(dataUri);
+      await audio.play();
+      audio.pause();
+      fileAudio[filename] = audio;
       div.classList.remove("disabled");
       div.addEventListener("click", (e) => {
         e.preventDefault();
         playAudio(div);
       });
-    };
-    reader.readAsDataURL(file);
+    }
   }
   async function playAudio(div) {
     if (!div.filename) {
@@ -144,7 +153,7 @@
       return;
     }
     if (!fileAudio[div.filename]) {
-      setError("Buffer not found");
+      setError("Audio element not found; did you remember to click load?");
       return;
     }
     if (div.playing) {
@@ -169,10 +178,15 @@
   }
 
   // src/index.mts
-  load_button.onclick = async (e) => {
+  directory_input.onchange = async (e) => {
     e.preventDefault();
     clearError();
     await updateDisplay();
+  };
+  load_button.onclick = async (e) => {
+    e.preventDefault();
+    clearError();
+    await bufferAllAudio();
   };
   async function updateDisplay() {
     const files = directory_input.files;

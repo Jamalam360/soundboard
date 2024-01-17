@@ -1,23 +1,34 @@
 import { setError } from "./debug.mjs";
 import { play_border_color } from "./styles.mjs";
 
+let fileDataUri: Record<string, [HTMLDivElement, string]> = {};
 let fileAudio: Record<string, HTMLAudioElement> = {};
 
 export async function loadAudio(file: File, div: HTMLDivElement) {
   const reader = new FileReader();
   reader.onload = async (ev) => {
-    fileAudio[file.name] = new Audio(ev.target.result as string);
-    await fileAudio[file.name].play();
-    fileAudio[file.name].pause();
+    fileDataUri[file.name] = [div, ev.target.result as string];
+  };
+
+  reader.readAsDataURL(file);
+}
+
+export async function bufferAllAudio() {
+  fileAudio = {};
+
+  for (let filename in Object.keys(fileDataUri)) {
+    const [div, dataUri] = fileDataUri[filename];
+    const audio = new Audio(dataUri);
+    await audio.play();
+    audio.pause();
+    fileAudio[filename] = audio;
 
     div.classList.remove("disabled");
     div.addEventListener("click", (e) => {
       e.preventDefault();
       playAudio(div);
     });
-  };
-
-  reader.readAsDataURL(file);
+  }
 }
 
 async function playAudio(div: HTMLDivElement) {
@@ -27,7 +38,7 @@ async function playAudio(div: HTMLDivElement) {
   }
 
   if (!fileAudio[div.filename]) {
-    setError("Buffer not found");
+    setError("Audio element not found; did you remember to click load?");
     return;
   }
 
