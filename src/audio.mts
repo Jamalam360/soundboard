@@ -1,13 +1,13 @@
 import { setError } from "./debug.mjs";
 import { play_border_color } from "./styles.mjs";
 
-let fileDataUri: Record<string, [HTMLDivElement, string]> = {};
+let fileDataUris: Record<string, [HTMLDivElement, string]> = {};
 let fileAudio: Record<string, HTMLAudioElement> = {};
 
 export async function loadAudio(file: File, div: HTMLDivElement) {
   const reader = new FileReader();
   reader.onload = async (ev) => {
-    fileDataUri[file.name] = [div, ev.target.result as string];
+    fileDataUris[file.name] = [div, ev.target.result as string];
   };
 
   reader.readAsDataURL(file);
@@ -16,8 +16,8 @@ export async function loadAudio(file: File, div: HTMLDivElement) {
 export async function bufferAllAudio() {
   fileAudio = {};
 
-  for (let filename in Object.keys(fileDataUri)) {
-    const [div, dataUri] = fileDataUri[filename];
+  for (let filename of Object.keys(fileDataUris)) {
+    const [div, dataUri] = fileDataUris[filename];
     const audio = new Audio(dataUri);
     await audio.play();
     audio.pause();

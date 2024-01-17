@@ -123,19 +123,19 @@
   }
 
   // src/audio.mts
-  var fileDataUri = {};
+  var fileDataUris = {};
   var fileAudio = {};
   async function loadAudio(file, div) {
     const reader = new FileReader();
     reader.onload = async (ev) => {
-      fileDataUri[file.name] = [div, ev.target.result];
+      fileDataUris[file.name] = [div, ev.target.result];
     };
     reader.readAsDataURL(file);
   }
   async function bufferAllAudio() {
     fileAudio = {};
-    for (let filename in Object.keys(fileDataUri)) {
-      const [div, dataUri] = fileDataUri[filename];
+    for (let filename of Object.keys(fileDataUris)) {
+      const [div, dataUri] = fileDataUris[filename];
       const audio = new Audio(dataUri);
       await audio.play();
       audio.pause();
