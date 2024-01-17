@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "tailwind": "npx tailwindcss -i styles.css -o ./build/output.css --watch",
-    "build": "npx esbuild index.ts --bundle --outfile=build/index.js --platform=browser"
+    "tailwind": "npx tailwindcss -i styles.css -o ./build/output.css --watch"
   },
   "repository": {
     "type": "git",
@@ -18,10 +17,6 @@
   },
   "homepage": "https://github.com/Jamalam360/soundboard#readme",
   "devDependencies": {
-    "tailwindcss": "^3.3.5",
-    "webpack-cli": "^5.1.4"
-  },
-  "dependencies": {
-    "standardized-audio-context": "^25.3.63"
+    "tailwindcss": "^3.3.5"
   }
 }

@@ -9,28 +9,28 @@
 </head>
 
 <body style="background-color: black; color: antiquewhite">
-	<script src="./build/index.js" defer></script>
+	<script src="./index.js" defer></script>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="stylesheet" href="build/output.css">
 
-	<main class="m-4 text-xl font-semibold text-gray-200">
-		<div id="error_container" class="flex-row items-center w-3/5 h-12 p-2 mx-auto mb-3 space-x-2 bg-red-600 rounded-lg"
+	<main class="text-xl m-4 text-gray-200 font-semibold">
+		<div id="error_container" class="w-3/5 h-12 mx-auto mb-3 p-2 bg-red-600 rounded-lg flex-row space-x-2 items-center"
 			style="display: none;">
 			<img
 				src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNlNWU3ZTUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1hbGVydC10cmlhbmdsZSI+PHBhdGggZD0ibTIxLjczIDE4LTgtMTRhMiAyIDAgMCAwLTMuNDggMGwtOCAxNEEyIDIgMCAwIDAgNCAyMWgxNmEyIDIgMCAwIDAgMS43My0zWiIvPjxwYXRoIGQ9Ik0xMiA5djQiLz48cGF0aCBkPSJNMTIgMTdoLjAxIi8+PC9zdmc+" />
 			<span id="error_text"></span>
 		</div>
 
-		<div class="flex items-center justify-center pb-4 border-b-2 border-b-gray-200">
+		<div class="border-b-2 border-b-gray-200 pb-4 flex justify-center items-center">
 			<input
-				class="block w-3/5 text-gray-400 placeholder-gray-400 bg-gray-700 border border-gray-600 rounded-lg cursor-pointer focus:outline-none"
+				class="block w-3/5 border rounded-lg cursor-pointer text-gray-400 focus:outline-none bg-gray-700 border-gray-600 placeholder-gray-400"
 				id="directory_picker" type="file" accept=".." webkitdirectory multiple>
 		</div>
 
-		<div class="grid w-full grid-cols-4 gap-4 mt-4" id="audio_grid">
+		<div class="mt-4 w-full grid gap-4 grid-cols-4" id="audio_grid">
 		</div>
 	</main>
 </body>
