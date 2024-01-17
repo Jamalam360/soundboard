@@ -166,7 +166,6 @@
   }
 
   // src/index.mts
-  console.log("test");
   directory_input.onchange = async (e) => {
     e.preventDefault();
     clearError();

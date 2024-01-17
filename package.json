@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "tailwind": "npx tailwindcss -i styles.css -o ./build/output.css --watch",
-    "build": "npx esbuild src/index.mts --bundle --outfile=build/index.js --platform=browser --watch",
+    "css": "npx tailwindcss -i styles.css -o ./build/output.css",
+    "css-watch": "npx tailwindcss -i styles.css -o ./build/output.css --watch",
+    "build": "npx esbuild src/index.mts --bundle --outfile=build/index.js --platform=browser",
+    "build-watch": "npx esbuild src/index.mts --bundle --outfile=build/index.js --platform=browser --watch",
     "prepare": "husky install"
   },
   "repository": {

@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-pnpm run tailwind
+pnpm run css
 pnpm run build
 
 git add build
-git commit --amend --no-edit
+git commit --amend --no-edit --no-verify
