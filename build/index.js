@@ -90,14 +90,14 @@
 
   // src/styles.mts
   var play_border_color = "rgb(229 231 235)";
-  var defaultColor = "rgb(153 27 27)";
+  var default_color = "#6b7280";
   function getColors(filename) {
-    let backColor = filename.slice(0, -4).split("_").pop();
-    if (backColor == null || !CSS.supports("color", backColor)) {
-      backColor = defaultColor;
+    let back_color = filename.slice(0, -4).split("_").pop();
+    if (back_color == null || !CSS.supports("color", back_color)) {
+      back_color = default_color;
     }
-    let textColor = getContrastColor(colorNameToHex(backColor));
-    return { color: textColor, backgroundColor: backColor };
+    let text_color = getContrastColor(colorNameToHex(back_color));
+    return { color: text_color, backgroundColor: back_color };
   }
   function getContrastColor(hexColor) {
     let r = parseInt(hexColor.substring(1, 2), 16);
@@ -110,9 +110,9 @@
     let elem = document.createElement("div");
     elem.style.color = colorName;
     document.body.appendChild(elem);
-    let computedColor = window.getComputedStyle(elem).color;
+    let computed_color = window.getComputedStyle(elem).color;
     document.body.removeChild(elem);
-    let hexColor = computedColor.replace(
+    let hexColor = computed_color.replace(
       /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d(?:\.\d+)?))?\)/,
       (_, r, g, b) => "#" + ((1 << 24) + (Number(r) << 16) + (Number(g) << 8) + Number(b)).toString(16).slice(1)
     );
