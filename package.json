@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "tailwind": "npx tailwindcss -i styles.css -o ./build/output.css --watch",
-    "build": "npx esbuild index.ts --bundle --outfile=build/index.js --platform=browser"
+    "build": "npx esbuild index.mts --bundle --outfile=build/index.js --platform=browser"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,5 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "standardized-audio-context": "^25.3.63"
   }
 }

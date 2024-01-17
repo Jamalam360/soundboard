@@ -681,6 +681,7 @@ video {
 .audio_file {
   display: flex;
   aspect-ratio: 4/3;
+  cursor: pointer;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -688,6 +689,11 @@ video {
   border-radius: 0.5rem;
   border-width: 4px;
   text-align: center;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 .focus\:outline-none:focus {

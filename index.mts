@@ -1,9 +1,3 @@
-import {
-  AudioContext,
-  isSupported as isWebAudioSupported,
-  AudioBufferSourceNode,
-} from "standardized-audio-context";
-
 declare global {
   interface HTMLDivElement {
     playing: boolean | null;
@@ -14,7 +8,7 @@ declare global {
   }
 }
 
-const debugEnabled = true;
+const debugEnabled = false;
 const error = document.getElementById("error_text") as HTMLSpanElement;
 const errorDiv = document.getElementById("error_container") as HTMLDivElement;
 const directoryPicker = document.getElementById(
@@ -25,18 +19,9 @@ const audioGrid = document.getElementById("audio_grid") as HTMLDivElement;
 const defaultBackColor = "rgb(153 27 27)";
 
 let fileAudio: Record<string, HTMLAudioElement> = {};
-// TODO: why is this needed? 
-let audioCtx: AudioContext | null = null;
 
 directoryPicker.onchange = async (e) => {
   e.preventDefault();
-
-  if (!(await isWebAudioSupported())) {
-    reportError("Web Audio API is not supported");
-    return;
-  }
-
-  audioCtx = new AudioContext();
   clearError();
   fileAudio = {};
   await updateDisplay();
@@ -60,9 +45,8 @@ async function updateDisplay() {
       continue;
     }
 
-    promises.push(loadAudio(file));
-
     let div = document.createElement("div");
+    promises.push(loadAudio(file, div));
 
     div.append(createItemTitle(file));
     div.playing = false;
@@ -75,44 +59,31 @@ async function updateDisplay() {
     div.style.color = color;
     div.style.borderColor = backgroundColor;
     div.classList.add("audio_file");
-
-    div.addEventListener("click", (e) => {
-      e.preventDefault();
-      playAudio(div);
-    });
-
+    div.classList.add("disabled");
     audioGrid.append(div);
   }
 
   await Promise.all(promises);
 }
 
-async function loadAudio(file: File) {
-  if (audioCtx === null) {
-    reportError("Audio context is not initialized");
-    return;
-  }
-
+async function loadAudio(file: File, div: HTMLDivElement) {
   const reader = new FileReader();
-  console.log(`loading ${file.name}`);
-  reader.onload = (ev) => {
-    console.log(`loaded ${file.name}, buffering it`);
+  reader.onload = async (ev) => {
     fileAudio[file.name] = new Audio(ev.target.result as string);
-    fileAudio[file.name].play();
-    setTimeout(fileAudio[file.name].pause, 10);
+    await fileAudio[file.name].play();
+    fileAudio[file.name].pause();
+
+    div.classList.remove("disabled");
+    div.addEventListener("click", (e) => {
+      e.preventDefault();
+      playAudio(div);
+    });
   };
 
   reader.readAsDataURL(file);
 }
 
 async function playAudio(div: HTMLDivElement) {
-  console.time(`load_${div.filename}`);
-
-  if (audioCtx === null) {
-    reportError("Audio context is not initialized");
-    return;
-  }
-
   if (!div.filename) {
     reportError("Div does not have an associated filename");
     return;
@@ -124,18 +95,18 @@ async function playAudio(div: HTMLDivElement) {
   }
 
   if (div.playing) {
-    if (div.audio != null) {
+    if (div.audio != null) {      
       div.audio.pause();
       div.audio = null;
       div.style.borderColor = div.normalBackColor;
       div.playing = false;
+      return;
     }
   }
-
+  
   const audio = fileAudio[div.filename];
-  console.timeEnd(`load_${div.filename}`);
-
-  console.time(`play_${div.filename}`);
+  audio.currentTime = 0;
+  audio.play();
   div.audio = audio;
   div.playing = true;
   div.style.borderColor = "rgb(229 231 235)";
@@ -143,7 +114,6 @@ async function playAudio(div: HTMLDivElement) {
   audio.onended = () => {
     div.style.borderColor = div.normalBackColor;
     div.playing = false;
-    console.timeEnd(`play_${div.filename}`);
   };
 }
 
