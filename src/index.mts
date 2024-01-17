@@ -3,9 +3,6 @@ import { clearError } from "./debug.mjs";
 import { audio_grid, directory_input } from "./elements.mjs";
 import { getColors } from "./styles.mjs";
 
-console.log("test");
-
-
 declare global {
   interface HTMLDivElement {
     playing: boolean | null;
