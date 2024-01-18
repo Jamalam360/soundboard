@@ -35,10 +35,6 @@ export async function bufferAllAudio() {
         curr += buffer.duration;
 
         div.classList.remove("disabled");
-        div.addEventListener("click", (e) => {
-          e.preventDefault();          
-          playAudio(div);
-        });
       }
 
       console.log(`Total concatenated length: ${curr}`);
@@ -52,7 +48,7 @@ export async function bufferAllAudio() {
     });
 }
 
-async function playAudio(div: HTMLDivElement) {
+export async function playAudio(div: HTMLDivElement) {
   if (!audio) {
     setError("Audio element not found; did you remember to click load?");
     return;

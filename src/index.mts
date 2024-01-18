@@ -1,7 +1,7 @@
-import { bufferAllAudio, loadAudio } from "./audio.mjs";
+import { bufferAllAudio, loadAudio, playAudio } from "./audio.mjs";
 import { clearError } from "./debug.mjs";
-import { audio_grid, directory_input, load_button } from "./elements.mjs";
-import { getColors } from "./styles.mjs";
+import { audio_grid, color_button, directory_input, load_button } from "./elements.mjs";
+import { cycleColor, getColors, loadColors } from "./styles.mjs";
 
 declare global {
   interface HTMLDivElement {
@@ -10,6 +10,8 @@ declare global {
     length: number | null;
   }
 }
+
+let divs: HTMLDivElement[] = [];
 
 directory_input.onchange = async (e) => {
   e.preventDefault();
@@ -24,6 +26,7 @@ load_button.onclick = async (e) => {
 };
 
 async function updateDisplay() {
+  divs = [];
   audio_grid.innerHTML = "";
   const raw_files = directory_input.files;
 
@@ -51,9 +54,11 @@ async function updateDisplay() {
     div.classList.add("audio_file");
     div.classList.add("disabled");
     audio_grid.append(div);
+    divs.push(div);
   }
 
   await Promise.all(loading_processes);
+  loadColors(divs);
 }
 
 function createItemTitle(file: File) {
@@ -71,3 +76,26 @@ function createItemTitle(file: File) {
   title.style.width = "100%";
   return title;
 }
+
+let color_change_mode = false;
+
+color_button.onclick = (e) => {
+  color_change_mode = !color_change_mode;
+  let button = e.target as HTMLButtonElement;
+
+  if (color_change_mode) {
+    button.innerText = "Stop";
+    for (const div of divs) {
+      div.onclick = (e) => {
+        cycleColor(e.target as HTMLDivElement);
+      };
+    }
+  } else {
+    button.innerText = "Change Colors";
+    for (const div of divs) {
+      div.onclick = async (e) => {
+        await playAudio(e.target as HTMLDivElement);
+      };
+    }
+  }
+};

@@ -226,6 +226,9 @@
   var load_button = document.getElementById(
     "load_button"
   );
+  var color_button = document.getElementById(
+    "color_button"
+  );
   var debug_separator = document.getElementById(
     "debug_separator"
   );
@@ -330,11 +333,44 @@
 
   // src/styles.mts
   var play_border_color = "rgb(229 231 235)";
-  var default_color = "#6b7280";
+  var colors = ["#6b7280", "#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e", "#22c55e", "#10b981", "#06b6d4", "#6366f1", "#a855f7", "#ec4899", "#f43f5e"];
+  function cycleColor(div) {
+    let currentColor = colors.indexOf(div.color);
+    let newColor = colors[currentColor + 1 % colors.length];
+    let textColor = getContrastColor(colorNameToHex(newColor));
+    div.style.backgroundColor = newColor;
+    div.color = newColor;
+    div.style.color = textColor;
+    div.style.borderColor = newColor;
+    saveColor(div);
+  }
+  function loadColors(divs2) {
+    for (const div of divs2) {
+      let json = localStorage.getItem(div.innerText);
+      if (json != null) {
+        let { color, backgroundColor } = JSON.parse(json);
+        div.style.backgroundColor = backgroundColor;
+        div.color = backgroundColor;
+        div.style.color = color;
+        div.style.borderColor = backgroundColor;
+      } else {
+        let { color, backgroundColor } = getColors(div.innerText);
+        div.style.backgroundColor = backgroundColor;
+        div.color = backgroundColor;
+        div.style.color = color;
+        div.style.borderColor = backgroundColor;
+        saveColor(div);
+      }
+    }
+  }
+  function saveColor(div) {
+    let json = JSON.stringify({ color: div.style.color, backgroundColor: div.style.backgroundColor });
+    localStorage.setItem(div.innerText, json);
+  }
   function getColors(filename) {
     let back_color = filename.slice(0, -4).split("_").pop();
     if (back_color == null || !CSS.supports("color", back_color)) {
-      back_color = default_color;
+      back_color = colors[0];
     }
     let text_color = getContrastColor(colorNameToHex(back_color));
     return { color: text_color, backgroundColor: back_color };
@@ -384,10 +420,6 @@
         div.length = buffer.duration;
         curr += buffer.duration;
         div.classList.remove("disabled");
-        div.addEventListener("click", (e) => {
-          e.preventDefault();
-          playAudio(div);
-        });
       }
       console.log(`Total concatenated length: ${curr}`);
       return crunker.concatAudio(buffers);
@@ -417,6 +449,7 @@
   }
 
   // src/index.mts
+  var divs = [];
   directory_input.onchange = async (e) => {
     e.preventDefault();
     clearError();
@@ -428,6 +461,7 @@
     await bufferAllAudio();
   };
   async function updateDisplay() {
+    divs = [];
     audio_grid.innerHTML = "";
     const raw_files = directory_input.files;
     if (raw_files == null || raw_files.length === 0) {
@@ -450,8 +484,10 @@
       div.classList.add("audio_file");
       div.classList.add("disabled");
       audio_grid.append(div);
+      divs.push(div);
     }
     await Promise.all(loading_processes);
+    loadColors(divs);
   }
   function createItemTitle(file) {
     let title = document.createElement("span");
@@ -466,4 +502,24 @@
     title.style.width = "100%";
     return title;
   }
+  var color_change_mode = false;
+  color_button.onclick = (e) => {
+    color_change_mode = !color_change_mode;
+    let button = e.target;
+    if (color_change_mode) {
+      button.innerText = "Stop";
+      for (const div of divs) {
+        div.onclick = (e2) => {
+          cycleColor(e2.target);
+        };
+      }
+    } else {
+      button.innerText = "Change Colors";
+      for (const div of divs) {
+        div.onclick = async (e2) => {
+          await playAudio(e2.target);
+        };
+      }
+    }
+  };
 })();
