@@ -1,6 +1,7 @@
 import Crunker from "crunker";
 import { setError } from "./debug.mjs";
 import { play_border_color } from "./styles.mjs";
+import { pause_button } from "./elements.mjs";
 
 let fileDataUris: Record<string, [HTMLDivElement, string]> = {};
 let audio: HTMLAudioElement | null = null;
@@ -61,10 +62,31 @@ export async function playAudio(div: HTMLDivElement) {
   console.log(`Playing ${div.innerText} from ${start}s for ${length}s`);
   console.time(`play_${div.innerText}`);
   audio.play();
+  enablePauseButton();
   console.timeEnd(`play_${div.innerText}`);
   setTimeout(() => {
     div.style.borderColor = div.color;
     audio.pause();
+    disablePauseButton();
     console.log(`${div.innerText} finished playing`);
   }, length * 1000);
 }
+
+function disablePauseButton() {
+  pause_button.disabled = true;
+  pause_button.classList.add("disabled");
+}
+
+function enablePauseButton() {
+  pause_button.disabled = false;
+  pause_button.classList.remove("disabled");
+}
+
+pause_button.onclick = () => {
+  audio?.pause();
+  disablePauseButton();
+
+  for (const div of Array.from(document.querySelectorAll(".audio_file")).map(x => x as HTMLDivElement)) {
+    div.style.borderColor = div.color;
+  }
+};

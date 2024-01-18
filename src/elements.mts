@@ -7,6 +7,9 @@ export const load_button = document.getElementById(
 export const color_button = document.getElementById(
   "color_button"
 ) as HTMLButtonElement;
+export const pause_button = document.getElementById(
+  "pause_button"
+) as HTMLButtonElement;
 export const debug_separator = document.getElementById(
   "debug_separator"
 ) as HTMLDivElement;

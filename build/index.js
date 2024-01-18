@@ -229,6 +229,9 @@
   var color_button = document.getElementById(
     "color_button"
   );
+  var pause_button = document.getElementById(
+    "pause_button"
+  );
   var debug_separator = document.getElementById(
     "debug_separator"
   );
@@ -456,13 +459,30 @@
     console.log(`Playing ${div.innerText} from ${start}s for ${length}s`);
     console.time(`play_${div.innerText}`);
     audio.play();
+    enablePauseButton();
     console.timeEnd(`play_${div.innerText}`);
     setTimeout(() => {
       div.style.borderColor = div.color;
       audio.pause();
+      disablePauseButton();
       console.log(`${div.innerText} finished playing`);
     }, length * 1e3);
   }
+  function disablePauseButton() {
+    pause_button.disabled = true;
+    pause_button.classList.add("disabled");
+  }
+  function enablePauseButton() {
+    pause_button.disabled = false;
+    pause_button.classList.remove("disabled");
+  }
+  pause_button.onclick = () => {
+    audio?.pause();
+    disablePauseButton();
+    for (const div of Array.from(document.querySelectorAll(".audio_file")).map((x) => x)) {
+      div.style.borderColor = div.color;
+    }
+  };
 
   // src/index.mts
   var divs = [];

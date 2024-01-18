@@ -15,6 +15,6 @@
 }
 
 input[type="file"]::-webkit-file-upload-button{
-	@apply h-10 px-2 bg-gray-600 text-gray-300 border-none;
+	@apply h-16 px-2 bg-gray-600 text-gray-300 border-none;
 }
 
