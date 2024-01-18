@@ -87,14 +87,14 @@ color_button.onclick = (e) => {
     button.innerText = "Stop";
     for (const div of divs) {
       div.onclick = (e) => {
-        cycleColor(e.target as HTMLDivElement);
+        cycleColor(div);
       };
     }
   } else {
     button.innerText = "Change Colors";
     for (const div of divs) {
       div.onclick = async (e) => {
-        await playAudio(e.target as HTMLDivElement);
+        await playAudio(div);
       };
     }
   }

@@ -1,15 +1,28 @@
-export const play_border_color = "rgb(229 231 235)";
+export const play_border_color = "#6b7280";
 
-const colors = ["#6b7280", "#ef4444", "#f97316", "#eab308", "#84cc16", "#22c55e", "#22c55e", "#10b981", "#06b6d4", "#6366f1", "#a855f7", "#ec4899", "#f43f5e"];
+const colors = [
+  "rgb(107, 114, 128)",
+  "rgb(239, 68, 68)",
+  "rgb(249, 115, 22)",
+  "rgb(234, 179, 8)",
+  "rgb(132, 204, 22)",
+  "rgb(34, 197, 94)",
+  "rgb(16, 185, 129)",
+  "rgb(6, 182, 212)",
+  "rgb(99, 102, 241)",
+  "rgb(168, 85, 247)",
+  "rgb(236, 72, 153)",
+  "rgb(244, 63, 94)",
+];
 
 export function cycleColor(div: HTMLDivElement) {
   let currentColor = colors.indexOf(div.color);
-  let newColor = colors[currentColor + 1 % colors.length];
-  let textColor = getContrastColor(colorNameToHex(newColor));
-  div.style.backgroundColor = newColor;
-  div.color = newColor;
-  div.style.color = textColor;
-  div.style.borderColor = newColor;
+  let new_color = colors[currentColor + 1 % colors.length];
+  let text_color = getContrastColor(colorNameToHex(new_color));
+  div.style.backgroundColor = new_color;
+  div.color = new_color;
+  div.style.color = text_color;
+  div.style.borderColor = new_color;
   saveColor(div);
 }
 
@@ -34,7 +47,10 @@ export function loadColors(divs: HTMLDivElement[]) {
 }
 
 function saveColor(div: HTMLDivElement) {
-  let json = JSON.stringify({ color: div.style.color, backgroundColor: div.style.backgroundColor });
+  let json = JSON.stringify({
+    color: div.style.color,
+    backgroundColor: div.style.backgroundColor,
+  });
   localStorage.setItem(div.innerText, json);
 }
 
