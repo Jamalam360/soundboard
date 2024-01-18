@@ -90,3 +90,5 @@ pause_button.onclick = () => {
     div.style.borderColor = div.color;
   }
 };
+
+disablePauseButton();

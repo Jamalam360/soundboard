@@ -483,6 +483,7 @@
       div.style.borderColor = div.color;
     }
   };
+  disablePauseButton();
 
   // src/index.mts
   var divs = [];
