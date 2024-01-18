@@ -715,8 +715,6 @@ video {
   padding-left: 1rem;
   padding-right: 1rem;
   text-align: center;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
 }
 
 .disabled {
@@ -749,4 +747,3 @@ input[type="file"]::-webkit-file-upload-button {
   outline: 2px solid transparent;
   outline-offset: 2px;
 }
-

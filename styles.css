@@ -7,7 +7,7 @@
 }
 
 .audio_file {
-	@apply aspect-[4/3] px-4 flex items-center justify-center border-2 rounded-lg overflow-hidden text-ellipsis text-sm text-center cursor-pointer;
+	@apply aspect-[4/3] px-4 flex items-center justify-center border-2 rounded-lg overflow-hidden text-ellipsis text-center cursor-pointer;
 }
 
 .disabled {
@@ -17,4 +17,3 @@
 input[type="file"]::-webkit-file-upload-button{
 	@apply h-16 px-2 bg-gray-600 text-gray-300 border-none;
 }
-
