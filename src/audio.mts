@@ -5,6 +5,7 @@ import { pause_button } from "./elements.mjs";
 
 let fileDataUris: Record<string, [HTMLDivElement, string]> = {};
 let audio: HTMLAudioElement | null = null;
+let previous_timeout: number | null = null;
 
 export async function loadAudio(file: File, div: HTMLDivElement) {
   console.time(`load_audio_${file.name}`);
@@ -47,6 +48,11 @@ export async function bufferAllAudio() {
       console.timeEnd("buffer_all_audio");
       audio = output.element;
     });
+
+  audio.onended = () => {
+    clearColors();
+    disablePauseButton();
+  };
 }
 
 export async function playAudio(div: HTMLDivElement) {
@@ -55,6 +61,11 @@ export async function playAudio(div: HTMLDivElement) {
     return;
   }
 
+  if (previous_timeout) {
+    clearTimeout(previous_timeout);
+  }
+  
+  clearColors();
   div.style.borderColor = play_border_color;
   const start = div.start || 0;
   const length = div.length || 0;
@@ -64,10 +75,11 @@ export async function playAudio(div: HTMLDivElement) {
   audio.play();
   enablePauseButton();
   console.timeEnd(`play_${div.innerText}`);
-  setTimeout(() => {
+  previous_timeout = setTimeout(() => {
     div.style.borderColor = div.color;
     audio.pause();
     disablePauseButton();
+    clearColors();
     console.log(`${div.innerText} finished playing`);
   }, length * 1000);
 }
@@ -85,10 +97,15 @@ function enablePauseButton() {
 pause_button.onclick = () => {
   audio?.pause();
   disablePauseButton();
+  clearColors();
+};
 
-  for (const div of Array.from(document.querySelectorAll(".audio_file")).map(x => x as HTMLDivElement)) {
+function clearColors() {
+  for (const div of Array.from(document.querySelectorAll(".audio_file")).map(
+    (x) => x as HTMLDivElement
+  )) {
     div.style.borderColor = div.color;
   }
-};
+}
 
 disablePauseButton();

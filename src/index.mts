@@ -1,6 +1,11 @@
 import { bufferAllAudio, loadAudio, playAudio } from "./audio.mjs";
 import { clearError } from "./debug.mjs";
-import { audio_grid, color_button, directory_input, load_button } from "./elements.mjs";
+import {
+  audio_grid,
+  color_button,
+  directory_input,
+  load_button,
+} from "./elements.mjs";
 import { cycleColor, getColors, loadColors } from "./styles.mjs";
 
 declare global {
@@ -17,7 +22,7 @@ directory_input.onchange = async (e) => {
   e.preventDefault();
   clearError();
   await updateDisplay();
-}
+};
 
 load_button.onclick = async (e) => {
   e.preventDefault();
@@ -34,7 +39,9 @@ async function updateDisplay() {
     return;
   }
 
-  const files = Array.from(raw_files).sort((a, b) => a.name.localeCompare(b.name));
+  const files = Array.from(raw_files).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
   const loading_processes = [];
 
   for (const file of files) {
@@ -59,6 +66,13 @@ async function updateDisplay() {
 
   await Promise.all(loading_processes);
   loadColors(divs);
+
+  color_button.innerText = "Change Colors";
+  for (const div of divs) {
+    div.onclick = async (e) => {
+      await playAudio(div);
+    };
+  }
 }
 
 function createItemTitle(file: File) {

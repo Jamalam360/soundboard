@@ -417,6 +417,7 @@
   // src/audio.mts
   var fileDataUris = {};
   var audio = null;
+  var previous_timeout = null;
   async function loadAudio(file, div) {
     console.time(`load_audio_${file.name}`);
     const reader = new FileReader();
@@ -446,12 +447,20 @@
       console.timeEnd("buffer_all_audio");
       audio = output.element;
     });
+    audio.onended = () => {
+      clearColors();
+      disablePauseButton();
+    };
   }
   async function playAudio(div) {
     if (!audio) {
       setError("Audio element not found; did you remember to click load?");
       return;
     }
+    if (previous_timeout) {
+      clearTimeout(previous_timeout);
+    }
+    clearColors();
     div.style.borderColor = play_border_color;
     const start = div.start || 0;
     const length = div.length || 0;
@@ -461,10 +470,11 @@
     audio.play();
     enablePauseButton();
     console.timeEnd(`play_${div.innerText}`);
-    setTimeout(() => {
+    previous_timeout = setTimeout(() => {
       div.style.borderColor = div.color;
       audio.pause();
       disablePauseButton();
+      clearColors();
       console.log(`${div.innerText} finished playing`);
     }, length * 1e3);
   }
@@ -479,10 +489,15 @@
   pause_button.onclick = () => {
     audio?.pause();
     disablePauseButton();
-    for (const div of Array.from(document.querySelectorAll(".audio_file")).map((x) => x)) {
+    clearColors();
+  };
+  function clearColors() {
+    for (const div of Array.from(document.querySelectorAll(".audio_file")).map(
+      (x) => x
+    )) {
       div.style.borderColor = div.color;
     }
-  };
+  }
   disablePauseButton();
 
   // src/index.mts
@@ -504,7 +519,9 @@
     if (raw_files == null || raw_files.length === 0) {
       return;
     }
-    const files = Array.from(raw_files).sort((a, b) => a.name.localeCompare(b.name));
+    const files = Array.from(raw_files).sort(
+      (a, b) => a.name.localeCompare(b.name)
+    );
     const loading_processes = [];
     for (const file of files) {
       if (!file.name.endsWith("mp3") && !file.name.endsWith("wav")) {
@@ -525,6 +542,12 @@
     }
     await Promise.all(loading_processes);
     loadColors(divs);
+    color_button.innerText = "Change Colors";
+    for (const div of divs) {
+      div.onclick = async (e) => {
+        await playAudio(div);
+      };
+    }
   }
   function createItemTitle(file) {
     let title = document.createElement("span");
