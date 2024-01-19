@@ -515,6 +515,7 @@
   async function updateDisplay() {
     divs = [];
     audio_grid.innerHTML = "";
+    console.log(JSON.stringify(directory_input, null, 2));
     const raw_files = directory_input.files;
     if (raw_files == null || raw_files.length === 0) {
       return;
