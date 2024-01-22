@@ -30,9 +30,7 @@ load_button.onclick = async (e) => {
   await bufferAllAudio();
 };
 
-async function updateDisplay() {
-  console.log("beans");
-  
+async function updateDisplay() {  
   divs = [];
   audio_grid.innerHTML = "";
   console.log(JSON.stringify(directory_input, null, 2));

@@ -513,7 +513,6 @@
     await bufferAllAudio();
   };
   async function updateDisplay() {
-    console.log("beans");
     divs = [];
     audio_grid.innerHTML = "";
     console.log(JSON.stringify(directory_input, null, 2));
